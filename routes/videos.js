@@ -7,19 +7,32 @@ const videosFilePath = "./data/videos.json";
 
 function getVideos() {
     const videosDetailedArray = fs.readFileSync(videosFilePath);
-    return JSON.parse(videosDetailedArray), console.log(JSON.parse(videosDetailedArray))
-
+    return JSON.parse(videosDetailedArray)
 }
 
-
+// endpoint to send array of videos
 router.get("/",(req,res)=>{
-      const videos = getVideos();
-   const  videoList = videos.map((video)=>{
-     {{video.id,video.title,video.channel}}
-   })
-console.log(videoList,"it is a string")
-    res.send(videos) 
-   
+ const videos = getVideos();
+ const videoArray  = videos.map(({id,title,channel,image})=>{
+ return {id,title,channel,image}    
+ })
+ res.json(videoArray)
 })
+
+
+
+// endpoint to send  details of the video with requested id
+router.get("/:id",(req,res)=>{
+const requestedId = req.params.id;
+const video =  getVideos().find(({id})=>{
+  return id === requestedId;
+})
+res.json(video)
+})
+
+
+
+
+
 
 module.exports = router;
