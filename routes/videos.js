@@ -16,8 +16,8 @@ router
 .get((_req,res)=>{
  const videos = getVideos();
  const videoArray  = videos.map(({id,title,channel,image})=>{
- return {id,title,channel,image}    
- })
+  return {id,title,channel,image}    
+})
  res.json(videoArray)
 })
 .post((req,res)=>{
@@ -25,7 +25,7 @@ router
     id : crypto.randomUUID(),
     title : req.body.title,
     channel : "Red Bull Bike",
-    image : "http://localhost:5050/images/image9.jpeg",
+    image : "http://localhost:5050/images/image9.jpg",
     description : req.body.description,
     views : "3,742,093",
     likes : "50,324",
@@ -56,8 +56,42 @@ res.json(video)
 // endpoint for comment post request 
 
 router.post("/:id/comments",(req,res)=>{
-  
-})
+  const requestedId = req.params.id;
+  const comment ={
+    id : crypto.randomUUID(),
+    name : req.body.name,
+    comment : req.body.comment,
+    likes : 0,
+    timestamp : new Date().getTime()
+  }
+  const videos = getVideos();
+  const selectedVideoDetails = videos.find(({id})=>{
+     return id === requestedId ;
+     
+  })
+  selectedVideoDetails.comments.push(comment);
+  fs.writeFileSync(videosFilePath,JSON.stringify(videos))
+  res.json(selectedVideoDetails.comments)
+  })
 
+
+
+
+router.delete('/:videoId/comments/:commentId',(req,res)=>{
+  const params = req.params;
+  const {videoId,commentId} = params;
+  const videos = getVideos();
+  const selectedVideo = videos.find(({id})=>{
+   return  id ===  videoId;
+ })
+ 
+  const commentsArray = selectedVideo.comments.filter(({id})=>{
+   return id !== commentId
+  })
+ selectedVideo.comments = commentsArray;
+fs.writeFileSync(videosFilePath,JSON.stringify(videos))
+
+res.send("Comment has been deleted")
+})
 
 module.exports = router;
