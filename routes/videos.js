@@ -2,7 +2,7 @@ const express = require("express")
 const router  = express.Router();
 const fs = require('fs');
 const crypto = require("crypto")
- 
+require("dotenv").config(); 
 
 const videosFilePath = "./data/videos.json";
 function getVideos() {
@@ -25,7 +25,7 @@ router
     id : crypto.randomUUID(),
     title : req.body.title,
     channel : "Red Bull Bike",
-    image : "http://localhost:5050/images/image9.jpg",
+    image : `http://localhost:${process.env.PORT}/images/image9.jpg`,
     description : req.body.description,
     views : "3,742,093",
     likes : "50,324",
@@ -76,7 +76,7 @@ router.post("/:id/comments",(req,res)=>{
 
 
 
-
+// endpoint to delete comment
 router.delete('/:videoId/comments/:commentId',(req,res)=>{
   const params = req.params;
   const {videoId,commentId} = params;
